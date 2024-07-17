@@ -10,6 +10,11 @@ add-pages:
 	sed 's/\(\[ *( *NotesRoute, *"notes" *) *\)\(.*\)\(]\)/\1, ( JokesRoute, "jokes" ), ( QuotesRoute, "quotes" ) \3/' project/src/Route.elm > temp && mv temp project/src/Route.elm
 	npx elm-review project/src/ --fix-all
 
+add-feature:
+	echo "Adding pages..."
+	cp -r project-original/src/. project/src/
+	npx elm-review project/src/ --fix-all
+
 
 sed:
 	echo "Running sed ..."
