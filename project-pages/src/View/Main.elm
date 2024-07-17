@@ -5,7 +5,9 @@ import Element exposing (Element)
 import Element.Background
 import Element.Font
 import Pages.Home
+import Pages.Jokes
 import Pages.Notes
+import Pages.Quotes
 import Route exposing (Route(..))
 import String.Extra
 import Types exposing (FrontendModel(..), FrontendMsg, LoadedModel)
@@ -52,6 +54,12 @@ loadedView model =
 
         NotesRoute ->
             generic model Pages.Notes.view
+
+        JokesRoute ->
+            generic model Pages.Jokes.view
+
+        QuotesRoute ->
+            generic model Pages.Quotes.view
 
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg

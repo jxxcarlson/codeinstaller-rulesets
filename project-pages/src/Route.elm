@@ -9,12 +9,13 @@ import Url.Parser
 type Route
     = HomepageRoute
     | NotesRoute
-
+    | QuotesRoute
+    | JokesRoute
 
 
 routesAndNames : List ( Route, String )
 routesAndNames =
-    [ ( NotesRoute, "notes" )]
+    [ ( NotesRoute, "notes" ), ( JokesRoute, "jokes" ), ( QuotesRoute, "quotes" ) ]
 
 
 encodeRoute : Route -> List String
@@ -24,17 +25,20 @@ encodeRoute route =
         |> Maybe.map (\name -> [ name ])
         |> Maybe.withDefault []
 
+
 decode : Url -> Route
 decode url =
     Url.Parser.oneOf
         ((Url.Parser.top |> Url.Parser.map HomepageRoute) :: parserData)
         |> (\a -> Url.Parser.parse a url |> Maybe.withDefault HomepageRoute)
 
+
 encode : Route -> String
 encode route =
     Url.Builder.absolute
         (encodeRoute route)
         []
+
 
 parserData : List (Url.Parser.Parser (Route -> c) c)
 parserData =

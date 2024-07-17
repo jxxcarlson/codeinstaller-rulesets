@@ -17,7 +17,9 @@ import RuleSet.Add
 
 
 
+config = RuleSet.Add.pages [ "quotes", "jokes"]
 
-config : List Rule
-config =
+configPages : List Rule
+configPages =
    RuleSet.Add.pages [ "quotes", "jokes"]
+
