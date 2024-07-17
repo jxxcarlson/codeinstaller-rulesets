@@ -1,5 +1,6 @@
 module ReviewConfig exposing (config)
 
+
 {-| Do not rename the ReviewConfig module or the config function, because
 `elm-review` will look for these.
 
@@ -12,8 +13,11 @@ when inside the directory containing this file.
 -}
 
 import Review.Rule exposing (Rule)
+import RuleSet.Add
+
+
 
 
 config : List Rule
 config =
-    []
+   RuleSet.Add.pages [ "quotes", "jokes"]
