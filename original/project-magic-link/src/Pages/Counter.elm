@@ -1,4 +1,4 @@
-module Pages.Notes exposing (..)
+module Pages.Counter exposing (..)
 
 import Element exposing (Element)
 import Html exposing (Html, text)
@@ -9,7 +9,8 @@ import Types exposing (FrontendMsg(..), LoadedModel)
 
 view model =
     Html.div [ style "padding" "50px" ]
-        [ Html.text "This app is a demo of a very simple single-page application in Elm."
-        , Html.text "\n\nWe are working on elm-review code to add new pages."
+        [ Html.button [ onClick Increment ] [ text "+" ]
+        , Html.div [ style "padding" "10px" ] [ Html.text (String.fromInt model.counter) ]
+        , Html.button [ onClick Decrement ] [ text "-" ]
         ]
         |> Element.html

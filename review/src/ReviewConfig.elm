@@ -16,8 +16,9 @@ import Review.Rule exposing (Rule)
 import RuleSet.Add
 
 
+config = RuleSet.Add.magicLinkAuth
 
-config = RuleSet.Add.pages [ "quotes", "jokes"]
+-- config = RuleSet.Add.pages [ "quotes", "jokes"]
 
 configPages : List Rule
 configPages =

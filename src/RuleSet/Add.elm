@@ -18,6 +18,7 @@ import Install.Type
 import Install.TypeVariant as TypeVariant
 import Regex
 import Review.Rule exposing (Rule)
+import RuleSet.Add
 import String.Extra
 
 
@@ -60,6 +61,7 @@ magicLinkAuth =
         , configAuthTypes
         , configAuthFrontend
         , configAuthBackend
+        , RuleSet.Add.pages [ "counter", "admin", "notes", "signin", "tos" ]
         , configRoute
         , configView
         ]
