@@ -2,3 +2,5 @@ elm-stuff/
 .idea/
 vendor-secret/
 /vendor
+.DS_Store
+project-magic-link/.DS_Store
