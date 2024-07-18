@@ -81,7 +81,9 @@ signedInView model =
             Element.none
 
         Just userData ->
-            signOutButton userData.username
+            -- signOutButton userData.username
+            -- TODO: implement
+            Element.none
 
 
 signInView : Model -> Element MagicLink.Types.Msg
@@ -115,8 +117,8 @@ signUp model =
         , View.Input.template "User Name" model.username MagicLink.Types.InputUsername
         , View.Input.template "Email" model.email MagicLink.Types.InputEmail
         , Element.row [ Element.spacing 18 ]
-            [ signUpButton
-            , cancelSignUpButton
+            [ -- TODO: implement, signUpButton
+              cancelSignUpButton
             ]
         , Element.el [ Element.Font.size 14, Element.Font.italic, Element.Font.color View.Color.darkGray ] (Element.text model.message)
         ]
@@ -138,16 +140,20 @@ headerView model route config =
             [ Element.link
                 (View.Common.linkStyle route Route.HomepageRoute)
                 { url = Route.encode Route.HomepageRoute, label = Element.text "Home" }
-            , if User.isAdmin model.currentUserData then
-                Element.link
-                    (View.Common.linkStyle route Route.AdminRoute)
-                    { url = Route.encode Route.AdminRoute, label = Element.text "Admin" }
 
-              else
-                Element.none
+            -- TODO: FIX THE BELOW
+            --, if User.isAdmin model.currentUserData then
+            --    Element.link
+            --        (View.Common.linkStyle route Route.AdminRoute)
+            --        { url = Route.encode Route.AdminRoute, label = Element.text "Admin" }
+            --
+            --  else
+            --    Element.none
             , case model.currentUserData of
                 Just currentUserData_ ->
-                    signOutButton currentUserData_.username
+                    --signOutButton currentUserData_.username
+                    -- TODO: IMPLEMENT THIS ^^^
+                    Element.none
 
                 Nothing ->
                     Element.link
@@ -157,7 +163,9 @@ headerView model route config =
                             Element.el []
                                 (case model.currentUserData of
                                     Just currentUserData_ ->
-                                        signOutButton currentUserData_.username
+                                        -- signOutButton currentUserData_.username
+                                        -- TODO: IMPLEMENT THIS ^^^
+                                        Element.none
 
                                     Nothing ->
                                         Element.text "Sign in"
@@ -169,16 +177,15 @@ headerView model route config =
 
 
 -- BUTTON
-
-
-signUpButton : Element.Element MagicLink.Types.Msg
-signUpButton =
-    button MagicLink.Types.SubmitSignUp "Submit"
-
-
-signOutButton : String -> Element.Element MagicLink.Types.Msg
-signOutButton str =
-    button MagicLink.Types.SignOut ("Sign out " ++ str)
+--signUpButton : Element.Element MagicLink.Types.Msg
+--signUpButton =
+--    button MagicLink.Types.SubmitSignUp "Submit"
+--
+--
+--signOutButton : String -> Element.Element MagicLink.Types.Msg
+--signOutButton str =
+--    button MagicLink.Types.SignOut ("Sign out " ++ str)
+--
 
 
 cancelSignUpButton =

@@ -28,8 +28,7 @@ type alias Model =
     , signInStatus : SignInStatus
     , currentUser : Maybe User.User
     , currentUserData : Maybe User.SignInData
-
-    --, signInForm : SigninFormState
+    , signInForm : SigninFormState
     , signInState : SignInState
     , loginErrorMessage : Maybe String
     , realname : String

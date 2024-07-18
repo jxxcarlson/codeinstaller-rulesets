@@ -189,7 +189,7 @@ magicLinkAuthMinimal =
 
 configAuthTypes : List Rule
 configAuthTypes =
-    [ Import.qualified "Types" [ "AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session" ] |> Import.makeRule
+    [ Import.qualified "Types" [ "AssocList", "Auth.Common", "LocalUUID", "MagicLink.Types", "Session", "Dict" ] |> Import.makeRule
     , TypeVariant.makeRule "Types"
         "FrontendMsg"
         [ "SignInUser User.SignInData"
@@ -278,6 +278,7 @@ configAuthBackend =
         , "Auth.Common"
         , "Auth.Flow"
         , "MagicLink.Auth"
+        , "LocalUUID"
         , "MagicLink.Backend"
         , "Reconnect"
         , "User"
