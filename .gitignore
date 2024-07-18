@@ -4,3 +4,5 @@ vendor-secret/
 /vendor
 .DS_Store
 project-magic-link/.DS_Store
+project-magic-link/src
+project-magic-link/elm-stuff
