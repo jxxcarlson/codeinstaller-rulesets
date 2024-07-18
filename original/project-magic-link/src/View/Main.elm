@@ -50,8 +50,7 @@ loadedView model =
         HomepageRoute ->
             generic model Pages.Home.view
 
-        NotesRoute ->
-            generic model Pages.Notes.view
+     
 
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg

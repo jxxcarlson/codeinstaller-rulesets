@@ -49,7 +49,8 @@ addPage page =
     in
     [ TypeVariant.makeRule "Route" "Route" [ routeName ]
     , ClauseInCase.init "View.Main" "loadedView" routeName ("generic model " ++ viewFunction_) |> ClauseInCase.makeRule
-    , Import.qualified "View.Main" [ pageModuleName ] |> Import.makeRule
+
+    -- , Import.qualified "View.Main" [ pageModuleName ] |> Import.makeRule
     ]
 
 
@@ -206,9 +207,9 @@ configAuthTypes =
     , FieldInTypeAlias.makeRule "Types"
         "BackendModel"
         [ "localUuidData : Maybe LocalUUID.Data"
-        , "pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth"
-        , "pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"
-        , "sessions : Dict SessionId Auth.Common.UserInfo"
+        , "pendingAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingAuth"
+        , "pendingEmailAuths : Dict.Dict Lamdera.SessionId Auth.Common.PendingEmailAuth"
+        , "sessions : Dict.Dict SessionId Auth.Common.UserInfo"
         , "secretCounter : Int"
         , "sessionDict : AssocList.Dict SessionId String"
         , "pendingLogins : MagicLink.Types.PendingLogins"
@@ -320,7 +321,6 @@ configAuthBackend =
 configView =
     [ ClauseInCase.init "View.Main" "loadedView" "AdminRoute" adminRoute |> ClauseInCase.makeRule
     , ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> ClauseInCase.makeRule
-    , ClauseInCase.init "View.Main" "loadedView" "Notes" "generic model Pages.Notes.view" |> ClauseInCase.makeRule
     , ClauseInCase.init "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> ClauseInCase.makeRule
 
     --, ClauseInCase.init "View.Main" "loadedView" "CounterPageRoute" "generic model (generic model Pages.Counter.view)" |> ClauseInCase.makeRule

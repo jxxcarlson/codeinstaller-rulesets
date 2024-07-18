@@ -8,7 +8,6 @@ import Url.Parser
 
 type Route
     = HomepageRoute
-    | NotesRoute
 
 
 
