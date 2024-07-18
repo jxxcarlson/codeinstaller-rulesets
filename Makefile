@@ -28,8 +28,8 @@ deps-magic-link-auth:
 
 
 add-magic-link-auth:
-	echo "Adding pages..."
-	cp -r original/project-magic-link/src/ project-magic-link/src/
+	echo "Adding magic-link-auth..."
+	cp -r original/project-magic-link/src/. project-magic-link/src/
 	npx elm-review project-magic-link/src/ --fix-all
 
 
