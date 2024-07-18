@@ -27,10 +27,10 @@ deps-magic-link-auth:
 	lamdera install elm/http
 
 
-add-magic-link-auth:
+magic-link-auth:
 	echo "Adding magic-link-auth..."
 	cp -r original/project-magic-link/src/. project-magic-link/src/
-	npx elm-review project-magic-link/src/ --fix-all
+	npx elm-review project-magic-link/src/ --fix-all --debug
 
 
 

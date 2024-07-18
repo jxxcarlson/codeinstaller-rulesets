@@ -35,15 +35,21 @@ pages pageNames =
 addPage : String -> List Rule
 addPage page =
     let
-        routeTitle =
-            String.Extra.toTitleCase page
+        camelizedPageName =
+            String.Extra.camelize page
 
         routeName =
-            routeTitle ++ "Route"
+            camelizedPageName ++ "Route"
+
+        pageModuleName =
+            "Pages." ++ camelizedPageName
+
+        viewFunction_ =
+            pageModuleName ++ ".view"
     in
     [ TypeVariant.makeRule "Route" "Route" [ routeName ]
-    , ClauseInCase.init "View.Main" "loadedView" routeName ("generic model Pages." ++ routeTitle ++ ".view") |> ClauseInCase.makeRule
-    , Import.qualified "View.Main" [ "Pages." ++ routeTitle ] |> Import.makeRule
+    , ClauseInCase.init "View.Main" "loadedView" routeName ("generic model " ++ viewFunction_) |> ClauseInCase.makeRule
+    , Import.qualified "View.Main" [ pageModuleName ] |> Import.makeRule
     ]
 
 

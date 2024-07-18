@@ -1,5 +1,6 @@
 module MagicLink.Helper exposing
-    ( testUserDictionary
+    ( getAtmosphericRandomNumbers
+    , testUserDictionary
     , trigger
     )
 
@@ -18,6 +19,14 @@ import User
 -- TODO: this is a hack based on a lack of understanding of what is going on.
 -- in Martin's code.
 -- OTHER
+
+
+getAtmosphericRandomNumbers : Cmd Types.BackendMsg
+getAtmosphericRandomNumbers =
+    Http.get
+        { url = LocalUUID.randomNumberUrl 4 9
+        , expect = Http.expectString Types.GotAtmosphericRandomNumbers
+        }
 
 
 trigger : msg -> Cmd msg

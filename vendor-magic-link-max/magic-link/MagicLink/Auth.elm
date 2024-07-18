@@ -36,8 +36,9 @@ update msg model =
         MagicLink.Types.ReceivedSigninCode loginCode ->
             MagicLink.Frontend.signInWithCode model loginCode
 
-        --MagicLink.Types.CancelSignIn ->
-        --    ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Helper.trigger (Types.SetRoute_ Route.HomepageRoute) )
+        MagicLink.Types.CancelSignIn ->
+            ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Helper.trigger (Types.SetRoute_ Route.HomepageRoute) )
+
         MagicLink.Types.CancelSignUp ->
             ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
 

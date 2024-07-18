@@ -52,6 +52,7 @@ type Msg
     | AuthSigninRequested { methodId : Auth.Common.MethodId, email : Maybe String }
     | ReceivedSigninCode String
     | CancelSignUp
+    | CancelSignIn
     | OpenSignUp
     | TypedEmailInSignInForm String
     | InputRealname String
