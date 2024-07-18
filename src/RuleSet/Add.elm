@@ -18,7 +18,6 @@ import Install.Type
 import Install.TypeVariant as TypeVariant
 import Regex
 import Review.Rule exposing (Rule)
-import RuleSet.Add
 import String.Extra
 
 
@@ -58,11 +57,11 @@ magicLinkAuth =
     List.concat
         [ configAtmospheric
         , configUsers
-        , configAuthTypes
-        , configAuthFrontend
+        , configAuthTypes -- Problem??
+        , configAuthFrontend -- Problem??
         , configAuthBackend
-        , RuleSet.Add.pages [ "counter", "admin", "notes", "signin", "tos" ]
-        , configRoute
+
+        --, configRoute
         , configView
         ]
 
@@ -124,7 +123,7 @@ magicLinkAuthMinimal : List Rule
 magicLinkAuthMinimal =
     [ Import.qualified "Types" [ "Dict", "AssocList", "EmailAddress", "LocalUUID", "Auth.Common", "MagicLink.Types", "Session", "User" ] |> Import.makeRule
     , Import.qualified "Frontend" [ "Dict", "MagicLink.Types", "Auth.Common", "MagicLink.Frontend", "MagicLink.Auth", "Pages.SignIn" ] |> Import.makeRule
-    , Import.qualified "Backend" [ "Dict", "AssocList", "Time", "Auth.Flow", "MagicLink.Auth", "User", "LocalUUID" ] |> Import.makeRule
+    , Import.qualified "Backend" [ "Dict", "AssocList", "Time", "Auth.Flow", "MagicLink.Auth", "MagicLink.Backend", "User", "LocalUUID" ] |> Import.makeRule
     , TypeVariant.makeRule "Types" "FrontendMsg" [ "AuthFrontendMsg MagicLink.Types.Msg" ]
     , TypeVariant.makeRule "Types" "BackendMsg" [ "AuthBackendMsg Auth.Common.BackendMsg" ]
     , TypeVariant.makeRule "Types" "ToBackend" [ "AuthToBackend Auth.Common.ToBackend" ]
@@ -214,7 +213,6 @@ configAuthTypes =
         "ToBackend"
         [ "AuthToBackend Auth.Common.ToBackend"
         , "AddUser String String String"
-        , "RequestSignUp String String String"
         , "GetUserDictionary"
         ]
     , FieldInTypeAlias.makeRule "Types" "LoadedModel" [ "magicLinkModel : MagicLink.Types.Model" ]
@@ -231,9 +229,10 @@ configAuthFrontend =
     , ClauseInCase.init "Frontend" "updateFromBackendLoaded" "GotUserDictionary users" "( { model | users = users }, Cmd.none )"
         |> ClauseInCase.withInsertAtBeginning
         |> ClauseInCase.makeRule
-    , ClauseInCase.init "Frontend" "updateFromBackendLoaded" "UserRegistered user" "MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
-        |> ClauseInCase.withInsertAtBeginning
-        |> ClauseInCase.makeRule
+
+    --, ClauseInCase.init "Frontend" "updateFromBackendLoaded" "UserRegistered user" "MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
+    --    |> ClauseInCase.withInsertAtBeginning
+    --    |> ClauseInCase.makeRule
     , ClauseInCase.init "Frontend" "updateFromBackendLoaded" "GotMessage message" "({model | message = message}, Cmd.none)"
         |> ClauseInCase.withInsertAtBeginning
         |> ClauseInCase.makeRule
@@ -296,19 +295,19 @@ configAuthBackend =
         ]
     , ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> ClauseInCase.makeRule
     , ClauseInCase.init "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "updateFromFrontend" "RequestSignUp realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> ClauseInCase.makeRule
+
+    --, ClauseInCase.init "Backend" "updateFromFrontend" "RequestSignUp realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> ClauseInCase.makeRule
     , ClauseInCase.init "Backend" "updateFromFrontend" "GetUserDictionary" "( model, Lamdera.sendToFrontend clientId (GotUserDictionary model.users) )" |> ClauseInCase.makeRule
     , Subscription.makeRule "Backend" [ "Lamdera.onConnect OnConnected" ]
     ]
 
 
-configRoute : List Rule
-configRoute =
-    [ -- ROUTE
-      TypeVariant.makeRule "Route" "Route" [ "TermsOfServiceRoute", "Notes", "SignInRoute", "AdminRoute" ]
-    , ReplaceFunction.init "Route" "decode" decode |> ReplaceFunction.makeRule
-    , ReplaceFunction.init "Route" "encode" encode |> ReplaceFunction.makeRule
-    ]
+
+--configRoute : List Rule
+--configRoute =
+--    [ -- ROUTE
+--      TypeVariant.makeRule "Route" "Route" [ "TermsOfServiceRoute", "Notes", "SignInRoute", "AdminRoute" ]
+--    ]
 
 
 configView =
@@ -316,10 +315,12 @@ configView =
     , ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> ClauseInCase.makeRule
     , ClauseInCase.init "View.Main" "loadedView" "Notes" "generic model Pages.Notes.view" |> ClauseInCase.makeRule
     , ClauseInCase.init "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> ClauseInCase.makeRule
-    , ClauseInCase.init "View.Main" "loadedView" "CounterPageRoute" "generic model (generic model Pages.Counter.view)" |> ClauseInCase.makeRule
+
+    --, ClauseInCase.init "View.Main" "loadedView" "CounterPageRoute" "generic model (generic model Pages.Counter.view)" |> ClauseInCase.makeRule
     , InsertFunction.init "View.Main" "generic" generic |> InsertFunction.makeRule
     , Import.qualified "View.Main" [ "Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes", "User" ] |> Import.makeRule
-    , ReplaceFunction.init "View.Main" "headerRow" (asOneLine headerRow) |> ReplaceFunction.makeRule
+
+    --, ReplaceFunction.init "View.Main" "headerRow" (asOneLine headerRow) |> ReplaceFunction.makeRule
     ]
 
 
@@ -359,79 +360,6 @@ generic model view_ =
         , footer model.route model
         ]
 """
-
-
-encode =
-    """encode : Route -> String
-encode route =
-    Url.Builder.absolute
-        (case route of
-            HomepageRoute ->
-                []
-
-            CounterPageRoute ->
-                [ "counter" ]
-
-            TermsOfServiceRoute ->
-                [ "terms" ]
-
-            Notes ->
-                [ "notes" ]
-
-            SignInRoute ->
-                [ "signin" ]
-
-            AdminRoute ->
-                [ "admin" ]
-        )
-        (case route of
-            HomepageRoute ->
-                []
-
-            CounterPageRoute ->
-                []
-
-            TermsOfServiceRoute ->
-                []
-
-            Notes ->
-                []
-
-            SignInRoute ->
-                []
-
-            AdminRoute ->
-                []
-        )
-"""
-
-
-decode =
-    """decode : Url -> Route
-decode url =
-    Url.Parser.oneOf
-        [ Url.Parser.top |> Url.Parser.map HomepageRoute
-        , Url.Parser.s "counter" |> Url.Parser.map CounterPageRoute
-        , Url.Parser.s "admin" |> Url.Parser.map AdminRoute
-        , Url.Parser.s "notes" |> Url.Parser.map Notes
-        , Url.Parser.s "signin" |> Url.Parser.map SignInRoute
-        , Url.Parser.s "tos" |> Url.Parser.map TermsOfServiceRoute
-        ]
-        |> (\\a -> Url.Parser.parse a url |> Maybe.withDefault HomepageRoute)
-"""
-
-
-
---configReset : List Rule
---configReset =
---    [ TypeVariant.makeRule "Types" "ToBackend" "CounterReset"
---    , TypeVariant.makeRule "Types" "FrontendMsg" "Reset"
---    , ClauseInCase.init "Frontend" "updateLoaded" "Reset" "( { model | counter = 0 }, sendToBackend CounterReset )"
---        |> ClauseInCase.withInsertAfter "Increment"
---        |> ClauseInCase.makeRule
---    , ClauseInCase.init "Backend" "updateFromFrontend" "CounterReset" "( { model | counter = 0 }, broadcast (CounterNewValue 0 clientId) )" |> ClauseInCase.makeRule
---    , ReplaceFunction.init "Pages.Counter" "view" viewFunction |> ReplaceFunction.makeRule
---    ]
 
 
 viewFunction =
