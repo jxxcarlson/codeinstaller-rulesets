@@ -50,7 +50,7 @@ loadedView model =
         HomepageRoute ->
             generic model Pages.Home.view
 
-     
+
 
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg

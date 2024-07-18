@@ -17,7 +17,7 @@ import RuleSet.Add
 
 
 config = List.concat [
-       RuleSet.Add.pages [ "-sign-in", "-terms-of-service", "admin"]
+       RuleSet.Add.pages [ "-sign-in", "-terms-of-service"]
     ,  RuleSet.Add.magicLinkAuth
 
   ]
