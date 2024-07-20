@@ -55,11 +55,11 @@ loadedView model =
         NotesRoute ->
             generic model Pages.Notes.view
 
-        JokesRoute ->
-            generic model Pages.Jokes.view
-
         QuotesRoute ->
             generic model Pages.Quotes.view
+
+        JokesRoute ->
+            generic model Pages.Jokes.view
 
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
