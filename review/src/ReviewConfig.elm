@@ -16,7 +16,9 @@ import Review.Rule exposing (Rule)
 import RuleSet.Add
 
 
-config = List.concat [
+config = configPages
+
+configAuth = List.concat [
        RuleSet.Add.pages [ "-sign-in", "-terms-of-service"]
     ,  RuleSet.Add.magicLinkAuth
 
@@ -24,5 +26,5 @@ config = List.concat [
 
 configPages : List Rule
 configPages =
-   RuleSet.Add.pages [ "quotes", "jokes"]
+   RuleSet.Add.pages ["quotes", "jokes"]
 

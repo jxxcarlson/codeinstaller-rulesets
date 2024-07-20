@@ -7,6 +7,7 @@ module RuleSet.Add exposing (pages, magicLinkAuth, magicLinkAuthMinimal)
 -}
 
 import Install.ClauseInCase as ClauseInCase
+import Install.ElementToList as ElementToList
 import Install.FieldInTypeAlias as FieldInTypeAlias
 import Install.Function.InsertFunction as InsertFunction
 import Install.Function.ReplaceFunction as ReplaceFunction
@@ -32,25 +33,24 @@ pages pageNames =
     List.concatMap addPage pageNames
 
 
+addPages : List String -> List Rule
+addPages pageNames =
+    List.concatMap addPage pageNames
+
+
 addPage : String -> List Rule
 addPage page =
     let
-        camelizedPageName =
-            String.Extra.camelize page
+        routeTitle =
+            String.Extra.toTitleCase page
 
         routeName =
-            camelizedPageName ++ "Route"
-
-        pageModuleName =
-            "Pages." ++ camelizedPageName
-
-        viewFunction_ =
-            pageModuleName ++ ".view"
+            routeTitle ++ "Route"
     in
     [ TypeVariant.makeRule "Route" "Route" [ routeName ]
-    , ClauseInCase.init "View.Main" "loadedView" routeName ("generic model " ++ viewFunction_) |> ClauseInCase.makeRule
-
-    -- , Import.qualified "View.Main" [ pageModuleName ] |> Import.makeRule
+    , ClauseInCase.config "View.Main" "loadedView" routeName ("generic model Pages." ++ routeTitle ++ ".view") |> ClauseInCase.makeRule
+    , Import.qualified "View.Main" [ "Pages." ++ routeTitle ] |> Import.makeRule
+    , ElementToList.makeRule "Route" "routesAndNames" [ "(JokesRoute, \"jokes\")", "(QuotesRoute, \"quotes\")" ]
     ]
 
 
@@ -90,9 +90,9 @@ configAtmospheric =
         , "GotFastTick Time.Posix"
         ]
     , InitializerCmd.makeRule "Backend" "init" [ "Time.now |> Task.perform GotFastTick", "MagicLink.Helper.getAtmosphericRandomNumbers" ]
-    , ClauseInCase.init "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "update" "GotAtmosphericRandomNumbers randomNumberString" "Atmospheric.setAtmosphericRandomNumbers model randomNumberString" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "update" "SetLocalUuidStuff randomInts" "(model, Cmd.none)" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "update" "GotFastTick time" "( { model | time = time } , Cmd.none )" |> ClauseInCase.makeRule
     ]
 
 
@@ -163,7 +163,7 @@ magicLinkAuthMinimal =
         , "time: Time.Posix"
         , "randomAtmosphericNumbers: Maybe (List Int)"
         ]
-    , Initializer.makeRule "Frontend" "initLoaded" [ { field = "magicLinkModel", value = "Pages.SignIn.init loadingModel.initUrl" } ]
+    , Initializer.makeRule "Frontend" "initLoaded" [ { field = "magicLinkModel", value = "Pages.SignIn.config loadingModel.initUrl" } ]
     , Initializer.makeRule "Backend"
         "init"
         [ { field = "randomAtmosphericNumbers", value = "Just [ 235880, 700828, 253400, 602641 ]" }
@@ -180,10 +180,10 @@ magicLinkAuthMinimal =
         , { field = "pendingLogins", value = "AssocList.empty" }
         , { field = "log", value = "[]" }
         ]
-    , ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "update" "AuthBackendMsg _" "(model, Cmd.none)" |> ClauseInCase.makeRule
-    , ReplaceFunction.init "Frontend" "tryLoading" tryLoading2
+    , ClauseInCase.config "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "update" "AuthBackendMsg _" "(model, Cmd.none)" |> ClauseInCase.makeRule
+    , ReplaceFunction.config "Frontend" "tryLoading" tryLoading2
         |> ReplaceFunction.makeRule
     ]
 
@@ -230,22 +230,22 @@ configAuthFrontend : List Rule
 configAuthFrontend =
     [ Import.qualified "Frontend" [ "MagicLink.Types", "Auth.Common", "MagicLink.Frontend", "MagicLink.Auth", "Pages.SignIn", "Pages.Home", "Pages.TermsOfService", "Pages.Notes" ] |> Import.makeRule
     , Initializer.makeRule "Frontend" "initLoaded" [ { field = "magicLinkModel", value = "Pages.SignIn.init loadingModel.initUrl" } ]
-    , ClauseInCase.init "Frontend" "updateFromBackendLoaded" "AuthToFrontend authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
+    , ClauseInCase.config "Frontend" "updateFromBackendLoaded" "AuthToFrontend authToFrontendMsg" "MagicLink.Auth.updateFromBackend authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
         |> ClauseInCase.withInsertAtBeginning
         |> ClauseInCase.makeRule
-    , ClauseInCase.init "Frontend" "updateFromBackendLoaded" "GotUserDictionary users" "( { model | users = users }, Cmd.none )"
+    , ClauseInCase.config "Frontend" "updateFromBackendLoaded" "GotUserDictionary users" "( { model | users = users }, Cmd.none )"
         |> ClauseInCase.withInsertAtBeginning
         |> ClauseInCase.makeRule
 
-    --, ClauseInCase.init "Frontend" "updateFromBackendLoaded" "UserRegistered user" "MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
+    --, ClauseInCase.config "Frontend" "updateFromBackendLoaded" "UserRegistered user" "MagicLink.Frontend.userRegistered model.magicLinkModel user |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })"
     --    |> ClauseInCase.withInsertAtBeginning
     --    |> ClauseInCase.makeRule
-    , ClauseInCase.init "Frontend" "updateFromBackendLoaded" "GotMessage message" "({model | message = message}, Cmd.none)"
+    , ClauseInCase.config "Frontend" "updateFromBackendLoaded" "GotMessage message" "({model | message = message}, Cmd.none)"
         |> ClauseInCase.withInsertAtBeginning
         |> ClauseInCase.makeRule
-    , ClauseInCase.init "Frontend" "updateLoaded" "SetRoute_ route" "( { model | route = route }, Cmd.none )" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Frontend" "updateLoaded" "SignInUser userData" "MagicLink.Frontend.signIn model userData" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Frontend" "updateLoaded" "SetRoute_ route" "( { model | route = route }, Cmd.none )" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Frontend" "updateLoaded" "AuthFrontendMsg authToFrontendMsg" "MagicLink.Auth.update authToFrontendMsg model.magicLinkModel |> Tuple.mapFirst (\\magicLinkModel -> { model | magicLinkModel = magicLinkModel })" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Frontend" "updateLoaded" "SignInUser userData" "MagicLink.Frontend.signIn model userData" |> ClauseInCase.makeRule
     , TypeVariant.makeRule "Types"
         "ToFrontend"
         [ "AuthToFrontend Auth.Common.ToFrontend"
@@ -261,8 +261,8 @@ configAuthFrontend =
         , "GotMessage String"
         ]
     , Install.Type.makeRule "Types" "BackendDataStatus" [ "Sunny", "LoadedBackendData", "Spell String Int" ]
-    , ClauseInCase.init "Frontend" "updateLoaded" "LiftMsg _" "( model, Cmd.none )" |> ClauseInCase.makeRule
-    , ReplaceFunction.init "Frontend" "tryLoading" tryLoading2
+    , ClauseInCase.config "Frontend" "updateLoaded" "LiftMsg _" "( model, Cmd.none )" |> ClauseInCase.makeRule
+    , ReplaceFunction.config "Frontend" "tryLoading" tryLoading2
         |> ReplaceFunction.makeRule
     ]
 
@@ -270,10 +270,10 @@ configAuthFrontend =
 configAuthBackend : List Rule
 configAuthBackend =
     -- 19 rules
-    [ ClauseInCase.init "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "update" "OnConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "update" "ClientConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> ClauseInCase.makeRule
+    [ ClauseInCase.config "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "update" "OnConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "update" "ClientConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> ClauseInCase.makeRule
     , Import.qualified "Backend"
         [ "AssocList"
         , "Auth.Common"
@@ -301,25 +301,25 @@ configAuthBackend =
         , { field = "pendingLogins", value = "AssocList.empty" }
         , { field = "log", value = "[]" }
         ]
-    , ClauseInCase.init "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "updateFromFrontend" "AuthToBackend authMsg" "Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "updateFromFrontend" "AddUser realname username email" "MagicLink.Backend.addUser model clientId email realname username" |> ClauseInCase.makeRule
 
-    --, ClauseInCase.init "Backend" "updateFromFrontend" "RequestSignUp realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> ClauseInCase.makeRule
-    , ClauseInCase.init "Backend" "updateFromFrontend" "GetUserDictionary" "( model, Lamdera.sendToFrontend clientId (GotUserDictionary model.users) )" |> ClauseInCase.makeRule
+    --, ClauseInCase.config "Backend" "updateFromFrontend" "RequestSignUp realname username email" "MagicLink.Backend.requestSignUp model clientId realname username email" |> ClauseInCase.makeRule
+    , ClauseInCase.config "Backend" "updateFromFrontend" "GetUserDictionary" "( model, Lamdera.sendToFrontend clientId (GotUserDictionary model.users) )" |> ClauseInCase.makeRule
     , Subscription.makeRule "Backend" [ "Lamdera.onConnect OnConnected" ]
     ]
 
 
 configView =
-    [ -- ClauseInCase.init "View.Main" "loadedView" "AdminRoute" adminRoute |> ClauseInCase.makeRule
-      ClauseInCase.init "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> ClauseInCase.makeRule
-    , ClauseInCase.init "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> ClauseInCase.makeRule
+    [ -- ClauseInCase.config "View.Main" "loadedView" "AdminRoute" adminRoute |> ClauseInCase.makeRule
+      ClauseInCase.config "View.Main" "loadedView" "TermsOfServiceRoute" "generic model Pages.TermsOfService.view" |> ClauseInCase.makeRule
+    , ClauseInCase.config "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> ClauseInCase.makeRule
 
-    --, ClauseInCase.init "View.Main" "loadedView" "CounterPageRoute" "generic model (generic model Pages.Counter.view)" |> ClauseInCase.makeRule
-    , InsertFunction.init "View.Main" "generic" generic |> InsertFunction.makeRule
+    --, ClauseInCase.config "View.Main" "loadedView" "CounterPageRoute" "generic model (generic model Pages.Counter.view)" |> ClauseInCase.makeRule
+    , InsertFunction.config "View.Main" "generic" generic |> InsertFunction.makeRule
     , Import.qualified "View.Main" [ "Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes", "User" ] |> Import.makeRule
 
-    --, ReplaceFunction.init "View.Main" "headerRow" (asOneLine headerRow) |> ReplaceFunction.makeRule
+    --, ReplaceFunction.config "View.Main" "headerRow" (asOneLine headerRow) |> ReplaceFunction.makeRule
     ]
 
 
@@ -424,7 +424,7 @@ tryLoading loadingModel =
                         , counter = 0
                         , window = window
                         , showTooltip = False
-                        , magicLinkModel = Pages.SignIn.init authRedirectBaseUrl
+                        , magicLinkModel = Pages.SignIn.config authRedirectBaseUrl
                         , route = loadingModel.route
                         , message = "Starting up ..."
                         , users = Dict.empty

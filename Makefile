@@ -7,7 +7,6 @@ base-pages:
 add-pages:
 	echo "Adding pages..."
 	cp -r original/project-pages/src/. project-pages/src/
-	sed 's/\(\[ *( *NotesRoute, *"notes" *) *\)\(.*\)\(]\)/\1, ( JokesRoute, "jokes" ), ( QuotesRoute, "quotes" ) \3/' original/project-pages/src/Route.elm > temp && mv temp project-pages/src/Route.elm
 	npx elm-review project-pages/src/ --fix-all
 
 deps-pages:
