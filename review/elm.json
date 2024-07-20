@@ -11,8 +11,8 @@
             "elm/regex": "1.0.0",
             "elmcraft/core-extra": "2.0.0",
             "jfmengels/elm-review": "2.14.0",
-            "jxxcarlson/elm-review-codeinstaller": "11.0.2",
-            "stil4m/elm-syntax": "7.3.2"
+            "jxxcarlson/elm-review-codeinstaller": "12.0.1",
+            "stil4m/elm-syntax": "7.3.3"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
