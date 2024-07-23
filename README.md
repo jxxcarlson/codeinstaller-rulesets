@@ -1,8 +1,11 @@
 # Code installer rule sets
 
+See the [Discourse article](https://discourse.elm-lang.org/t/installing-new-features-in-old-apps/9898).
+
 Rule sets for adding code to existing projects:
 
-        RuleSet.Add.pages [ ("QuotesRoute", "quotes"), ("QuotesRoute", "jokes") ]
+        RuleSet.Add.pages [ ("Quotes", "quotes"), ("Jokes", "jokes") ] 
+        -- [(route name, roude path),...]
         -- add pages to app
 
         RuleSet.Add.magicLinkAuth "Jane Doe" "jane" "jane@gmail.com"
@@ -28,7 +31,7 @@ Then run  `make app` to apply the rule set." To restore the app to its original 
 The app in `demo/` is a Lamdera app.  To run it, `cd` to that directory and say `lamdera live`.  The app will be available at `http://localhost:8000`.
 
 The sets `Add.magicLinkAuth` and `Add.magicLinkAuthWiring` are designed to work on Lamdera apps.  
-The `Add.pages` set works on any suitable Elm app.  See the section "Assumptions" below for more information.
+The `Add.pages` rule set works on any suitable Elm app.  See the section "Assumptions" below for more information.
 
 # Assumptions
 
