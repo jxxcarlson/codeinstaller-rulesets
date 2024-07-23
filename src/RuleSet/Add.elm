@@ -1,13 +1,8 @@
-module RuleSet.Add exposing (configMagicLinkAuth)
+module RuleSet.Add exposing (magicLinkAuth, pages)
 
-{-| Do not rename the ReviewConfig module or the config function, because
-`elm-review` will look for these.
+{-| Rules for adding pages and for adding magic-link authentication to a Lamdera app.
 
-To add packages that contain rules, add them to this review project using
-
-    `elm install author/packagename`
-
-when inside the directory containing this file.
+@docs pages, magicLinkAuth
 
 -}
 
@@ -26,8 +21,18 @@ import Review.Rule exposing (Rule)
 import String.Extra
 
 
+{-|
+    Add magic-link authentication to a Lamdera app:
 
-configMagicLinkAuth fullname username email =
+        configMagicLinkAuth "JC Maxwell" "maxwell" "maxwell@gmail.com"
+
+    This configures the base app with magic-link authentication, where
+    use `maxwell` is the adminstrator.
+
+
+-}
+magicLinkAuth : String -> String -> String -> List Rule
+magicLinkAuth fullname username email =
     configAll {fullname = fullname, username = username, email = email }
 
 stringifyAdminConfig : { fullname : String, username : String, email : String } -> String
@@ -245,18 +250,26 @@ configRoute =
 
 
 newPages =
-    addPages [ ( "TermsOfService", "terms" ) ]
+    pages [ ( "TermsOfService", "terms" ) ]
 
+{-|
+    Add pages to a Lamdera app:
 
-addPages : List ( String, String ) -> List Rule
-addPages pageData =
+        RuleSet.Add.pages [ ("QuotesRoute", "quotes"), ("QuotesRoute", "jokes") ]
+
+    adds pages for quotes and jokes to the app.  The routes are `QuotesRoute` and `QuotesRoute`
+    and the paths for the routes are `quotes` and `jokes`, respectively.
+
+-}
+pages : List ( String, String ) -> List Rule
+pages pageData =
     List.concatMap addPage pageData
 
 
 addPage : ( String, String ) -> List Rule
 addPage ( pageTitle, routeName ) =
     [ TypeVariant.makeRule "Route" "Route" [ pageTitle ++ "Route" ]
-    , ClauseInCase.config "View.Main" "loadedView" (pageTitle ++ "Route") ("generic model Pages." ++ pageTitle ++ ".view") |> ClauseInCase.makeRule
+    , ClauseInCase.config "View.Main" "loadedView" (pageTitle ++ "Route") ("pageHandler model Pages." ++ pageTitle ++ ".view") |> ClauseInCase.makeRule
     , Import.qualified "View.Main" [ "Pages." ++ pageTitle ] |> Import.makeRule
     , ElementToList.makeRule "Route" "routesAndNames" [ "(" ++ pageTitle ++ "Route, \"" ++ routeName ++ "\")" ]
     ]
@@ -265,9 +278,9 @@ addPage ( pageTitle, routeName ) =
 configView : List Rule
 configView =
     [ ClauseInCase.config "View.Main" "loadedView" "AdminRoute" adminRoute |> ClauseInCase.makeRule
-    , ClauseInCase.config "View.Main" "loadedView" "NotesRoute" "generic model Pages.Notes.view" |> ClauseInCase.makeRule
-    , ClauseInCase.config "View.Main" "loadedView" "SignInRoute" "generic model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> ClauseInCase.makeRule
-    , ClauseInCase.config "View.Main" "loadedView" "CounterPageRoute" "generic model Pages.Counter.view" |> ClauseInCase.makeRule
+    , ClauseInCase.config "View.Main" "loadedView" "NotesRoute" "pageHandler model Pages.Notes.view" |> ClauseInCase.makeRule
+    , ClauseInCase.config "View.Main" "loadedView" "SignInRoute" "pageHandler model (\\model_ -> Pages.SignIn.view Types.LiftMsg model_.magicLinkModel |> Element.map Types.AuthFrontendMsg)" |> ClauseInCase.makeRule
+    , ClauseInCase.config "View.Main" "loadedView" "CounterPageRoute" "pageHandler model Pages.Counter.view" |> ClauseInCase.makeRule
     , Import.qualified "View.Main" [ "MagicLink.Helper", "Pages.Counter", "Pages.SignIn", "Pages.Admin", "Pages.TermsOfService", "Pages.Notes", "User" ] |> Import.makeRule
     , ReplaceFunction.config "View.Main" "headerRow" headerRow |> ReplaceFunction.makeRule
     , ReplaceFunction.config "View.Main" "makeLinks" makeLinks |> ReplaceFunction.makeRule
@@ -297,7 +310,7 @@ headerRow =
 
 
 adminRoute =
-    "if User.isAdmin model.magicLinkModel.currentUserData then generic model Pages.Admin.view else generic model Pages.Home.view"
+    "if User.isAdmin model.magicLinkModel.currentUserData then pageHandler model Pages.Admin.view else pageHandler model Pages.Home.view"
 
 
 tryLoading2 =

@@ -1,18 +1,15 @@
 .PHONY: install uninstall deps
 
 base:
-	echo "Replacing project-pages/src/ with original/project-pages/src/..."
+	echo "Replacing demo/src/ with original/demo/src/..."
 	cp -r original/demo/src/. demo/src/
 
-pages:
-	echo "Adding pages..."
-	cp -r original/demo/src/. demo/src/
-	npx elm-review project-pages/src/ --fix-all
-
-auth:
+app:
+	echo "Replacing demo/src/ with original/demo/src/..."
 	git checkout demo/
 	cp -r original/demo/src/. demo/src/
 	cp vendor-secret/Env.elm demo/src
+	echo "Running elm-review rule in preview/src/ReviewConfig.elm ..."
 	npx elm-review --config preview demo/src --fix-all
 
 

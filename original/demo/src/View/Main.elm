@@ -49,14 +49,14 @@ loadedView : LoadedModel -> Element FrontendMsg
 loadedView model =
     case model.route of
         HomepageRoute ->
-            generic model Pages.Home.view
+            pageHandler model Pages.Home.view
 
         CounterPageRoute ->
-            generic model Pages.Counter.view
+            pageHandler model Pages.Counter.view
 
 
-generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
-generic model view_ =
+pageHandler : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
+pageHandler model view_ =
     Element.column
         [ Element.width Element.fill, Element.height Element.fill ]
         [ Element.row [ Element.width (Element.px model.window.width), Element.Background.color View.Color.blue ]

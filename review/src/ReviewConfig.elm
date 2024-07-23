@@ -13,13 +13,12 @@ when inside the directory containing this file.
 -}
 
 import Review.Rule exposing (Rule)
-import RuleSet.Add
+import RuleSest.Add
 
+config : List Rule
+config  = config1
 
-config = RuleSet.Add.configMagicLinkAuth "Jim Carlson" "jxxcarlson" "jxxcarlson@gmail.com"
+config1 = RuleSet.Add.magicLinkAuth "Jim Carlson" "jxxcarlson" "jxxcarlson@gmail.com"
 
-
-configPages : List Rule
-configPages =
-   RuleSet.Add.pages ["quotes", "jokes"]
+config2 = RuleSet.Add.pages [ ("QuotesRoute", "quotes"), ("QuotesRoute", "jokes") ]
 
