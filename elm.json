@@ -17,7 +17,7 @@
         "elm/time": "1.0.0 <= v < 2.0.0",
         "elmcraft/core-extra": "2.0.0 <= v < 3.0.0",
         "jfmengels/elm-review": "2.14.0 <= v < 3.0.0",
-        "jxxcarlson/elm-review-codeinstaller": "11.0.2 <= v < 12.0.0",
+        "jxxcarlson/elm-review-codeinstaller": "12.0.1 <= v < 13.0.0",
         "mdgriffith/elm-ui": "1.1.8 <= v < 2.0.0"
     },
     "test-dependencies": {}

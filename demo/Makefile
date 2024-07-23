@@ -18,3 +18,8 @@ deps:
 	lamdera install elm/time
 	lamdera install elmcraft/core-extra
 	lamdera install MartinSStewart/elm-nonempty-string
+
+auth: deps
+	echo "Adding magic-link-auth..."
+	cp -r original/project-magic-link/src/. project-magic-link/src/
+	npx elm-review project-magic-link/src/ --fix-all

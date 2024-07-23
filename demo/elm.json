@@ -2,9 +2,9 @@
   "type": "application",
   "source-directories": [
     "src",
-    "../vendor-magic-link-max/lamdera-auth",
-    "../vendor-magic-link-max/elm-email",
-    "../vendor-magic-link-max/magic-link"
+    "../vendor/lamdera-auth",
+    "../vendor/elm-email",
+    "../vendor/magic-link"
   ],
   "elm-version": "0.19.1",
   "dependencies": {

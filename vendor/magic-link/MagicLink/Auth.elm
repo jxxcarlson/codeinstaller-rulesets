@@ -4,6 +4,7 @@ module MagicLink.Auth exposing
     , updateFromBackend
     )
 
+import AssocList
 import Auth.Common exposing (UserInfo)
 import Auth.Flow
 import Auth.Method.EmailMagicLink
@@ -45,14 +46,18 @@ update msg model =
         MagicLink.Types.OpenSignUp ->
             ( { model | signInStatus = MagicLink.Types.SigningUp }, Cmd.none )
 
+        MagicLink.Types.CloseSignUp ->
+            ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
+
         MagicLink.Types.TypedEmailInSignInForm email ->
             MagicLink.Frontend.enterEmail model email
 
-        --MagicLink.Types.SubmitSignUp ->
-        --    MagicLink.Frontend.submitSignUp model
-        --
-        --MagicLink.Types.SignOut ->
-        --    MagicLink.Frontend.signOut model
+        MagicLink.Types.SubmitSignUp ->
+            MagicLink.Frontend.submitSignUp model
+
+        MagicLink.Types.SignOut ->
+            MagicLink.Frontend.signOut model
+
         MagicLink.Types.InputRealname str ->
             ( { model | realname = str }, Cmd.none )
 
@@ -92,7 +97,7 @@ updateFromBackend authToFrontendMsg model =
         Auth.Common.AuthSignInWithTokenResponse result ->
             case result of
                 Ok userData ->
-                    ( { model
+                    { model
                         | currentUserData = Just userData
                         , authFlow =
                             Auth.Common.Done
@@ -102,12 +107,10 @@ updateFromBackend authToFrontendMsg model =
                                 }
 
                         -- TODO, disable as test:, signInStatus = MagicLink.Types.SignedIn
-                      }
-                    , Cmd.none
-                    )
+                    }
+                        |> MagicLink.Frontend.signInWithTokenResponseM userData
+                        |> (\( m, c ) -> ( m, Cmd.batch [ c, MagicLink.Frontend.signInWithTokenResponseC userData, Helper.trigger <| SetRoute_ Route.HomepageRoute ] ))
 
-                --|> MagicLink.Frontend.signInWithTokenResponseM userData
-                -- |> (\( m, c ) -> ( m, Cmd.batch [ c, MagicLink.Frontend.signInWithTokenResponseC userData, Helper.trigger <| SetRoute_ Route.HomepageRoute ] ))
                 Err _ ->
                     ( model, Cmd.none )
 
@@ -171,7 +174,7 @@ initiateEmailSignin sessionId clientId model login now =
                             )
 
                         Nothing ->
-                            ( model, MagicLink.Common.sendMessage clientId "You are not properly registered." )
+                            ( model, MagicLink.Common.sendMessage clientId "You are not properly registered. Pleas sign up." )
 
 
 onEmailAuthCallbackReceived :
@@ -235,7 +238,12 @@ backendConfig model =
 
 logout : SessionId -> ClientId -> BackendModel -> ( BackendModel, Cmd msg )
 logout sessionId _ model =
-    ( { model | sessions = model.sessions |> Dict.remove sessionId }, Cmd.none )
+    ( { model
+        | sessions = model.sessions |> Dict.remove sessionId
+        , sessionDict = AssocList.remove sessionId model.sessionDict
+      }
+    , Cmd.none
+    )
 
 
 renewSession : Lamdera.SessionId -> Lamdera.ClientId -> BackendModel -> ( BackendModel, Cmd BackendMsg )

@@ -1,4 +1,4 @@
-module Pages.SignIn exposing (headerView, init, view)
+module Pages.SignIn exposing (headerView, init, showCurrentUser, view)
 
 import Auth.Common
 import Element exposing (Element)
@@ -64,7 +64,7 @@ view toSelf model =
         MagicLink.Types.SuccessfulRegistration username email ->
             Element.column []
                 [ signInAfterRegisteringView model
-                , Element.el [ Element.Font.color (Element.rgb 0 0 1) ] (Element.text <| username ++ ", you are now registered as " ++ email)
+                , Element.el [ Element.paddingXY 13 0, Element.Font.color (Element.rgb 0 0 1) ] (Element.text <| username ++ ", you are now registered as " ++ email)
                 ]
 
         MagicLink.Types.ErrorNotRegistered message ->
@@ -81,9 +81,8 @@ signedInView model =
             Element.none
 
         Just userData ->
-            -- signOutButton userData.username
-            -- TODO: implement
-            Element.none
+            -- TODO SIGNOUT BUTTON
+            signOutButton userData.username
 
 
 signInView : Model -> Element MagicLink.Types.Msg
@@ -91,13 +90,12 @@ signInView model =
     Element.column []
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
         , MagicLink.LoginForm.view model.signInForm
-
-        --, Element.paragraph [ Element.Font.color (Element.rgb 1 0 0) ] [ Element.text (model.loginErrorMessage |> Maybe.withDefault "") ]
         , Element.row
             [ Element.spacing 12
             , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
             ]
             [ Element.el [] (Element.text "Need to sign up?  "), View.Button.openSignUp ]
+        , Element.el [ Element.paddingXY 12 24, Element.Font.bold, Element.Font.color (Element.rgb 80 0 0) ] (Element.text model.message)
         ]
 
 
@@ -117,8 +115,8 @@ signUp model =
         , View.Input.template "User Name" model.username MagicLink.Types.InputUsername
         , View.Input.template "Email" model.email MagicLink.Types.InputEmail
         , Element.row [ Element.spacing 18 ]
-            [ -- TODO: implement, signUpButton
-              cancelSignUpButton
+            [ signUpButton
+            , View.Button.closeSignUp
             ]
         , Element.el [ Element.Font.size 14, Element.Font.italic, Element.Font.color View.Color.darkGray ] (Element.text model.message)
         ]
@@ -137,23 +135,16 @@ headerView model route config =
             , Element.Background.color View.Color.blue
             , Element.Font.color (Element.rgb 1 1 1)
             ]
-            [ Element.link
-                (View.Common.linkStyle route Route.HomepageRoute)
-                { url = Route.encode Route.HomepageRoute, label = Element.text "Home" }
+            [ if User.isAdmin model.currentUserData then
+                Element.link
+                    (View.Common.linkStyle route Route.AdminRoute)
+                    { url = Route.encode Route.AdminRoute, label = Element.text "Admin" }
 
-            -- TODO: FIX THE BELOW
-            --, if User.isAdmin model.currentUserData then
-            --    Element.link
-            --        (View.Common.linkStyle route Route.AdminRoute)
-            --        { url = Route.encode Route.AdminRoute, label = Element.text "Admin" }
-            --
-            --  else
-            --    Element.none
+              else
+                Element.none
             , case model.currentUserData of
                 Just currentUserData_ ->
-                    --signOutButton currentUserData_.username
-                    -- TODO: IMPLEMENT THIS ^^^
-                    Element.none
+                    signOutButton currentUserData_.username
 
                 Nothing ->
                     Element.link
@@ -163,9 +154,7 @@ headerView model route config =
                             Element.el []
                                 (case model.currentUserData of
                                     Just currentUserData_ ->
-                                        -- signOutButton currentUserData_.username
-                                        -- TODO: IMPLEMENT THIS ^^^
-                                        Element.none
+                                        signOutButton currentUserData_.username
 
                                     Nothing ->
                                         Element.text "Sign in"
@@ -177,15 +166,26 @@ headerView model route config =
 
 
 -- BUTTON
---signUpButton : Element.Element MagicLink.Types.Msg
---signUpButton =
---    button MagicLink.Types.SubmitSignUp "Submit"
---
---
---signOutButton : String -> Element.Element MagicLink.Types.Msg
---signOutButton str =
---    button MagicLink.Types.SignOut ("Sign out " ++ str)
---
+
+
+signUpButton : Element.Element MagicLink.Types.Msg
+signUpButton =
+    button MagicLink.Types.SubmitSignUp "Submit"
+
+
+showCurrentUser : { a | magicLinkModel : { b | currentUserData : Maybe { c | username : String } } } -> Element MagicLink.Types.Msg
+showCurrentUser model =
+    case model.magicLinkModel.currentUserData of
+        Nothing ->
+            Element.none
+
+        Just userData ->
+            signOutButton userData.username
+
+
+signOutButton : String -> Element.Element MagicLink.Types.Msg
+signOutButton str =
+    Element.el [ Element.paddingXY 24 0 ] (button MagicLink.Types.SignOut ("Sign out " ++ str))
 
 
 cancelSignUpButton =

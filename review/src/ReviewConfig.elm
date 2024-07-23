@@ -16,13 +16,8 @@ import Review.Rule exposing (Rule)
 import RuleSet.Add
 
 
-config = configPages
+config = RuleSet.Add.configMagicLinkAuth "Jim Carlson" "jxxcarlson" "jxxcarlson@gmail.com"
 
-configAuth = List.concat [
-       RuleSet.Add.pages [ "-sign-in", "-terms-of-service"]
-    ,  RuleSet.Add.magicLinkAuth
-
-  ]
 
 configPages : List Rule
 configPages =

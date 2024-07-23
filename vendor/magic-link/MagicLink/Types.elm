@@ -50,10 +50,13 @@ type Msg
     = SubmitEmailForSignIn
     | AuthSigninRequested { methodId : Auth.Common.MethodId, email : Maybe String }
     | ReceivedSigninCode String
-    | CancelSignUp
     | CancelSignIn
+    | CancelSignUp
     | OpenSignUp
+    | CloseSignUp
     | TypedEmailInSignInForm String
+    | SubmitSignUp
+    | SignOut
     | InputRealname String
     | InputUsername String
     | InputEmail String

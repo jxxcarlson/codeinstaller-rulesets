@@ -1,29 +1,19 @@
 .PHONY: install uninstall deps
 
-base-pages:
+base:
 	echo "Replacing project-pages/src/ with original/project-pages/src/..."
-	cp -r original/project-pages/src/. project-pages/src/
+	cp -r original/demo/src/. demo/src/
 
 add-pages:
 	echo "Adding pages..."
-	cp -r original/project-pages/src/. project-pages/src/
+	cp -r original/demo/src/. demo/src/
 	npx elm-review project-pages/src/ --fix-all
 
-deps-pages:
-	echo "Installing dependencies..."
-	lamdera install elm/json
-	lamdera install elm/time
-	lamdera install mdgriffith/elm-ui
-	lamdera install elmcraft/core-extra
-
-base-magic-link:
-	echo "Replacing project-magic-link/src/ with project-original/src/..."
-	cp -r original/project-magic-link/src/. project-magic-link/src/
-
-deps-magic-link-auth:
-	echo "Installing dependencies for magic-link-auth..."
-	lamdera install elm/bytes
-	lamdera install elm/http
+auth:
+	git checkout demo/
+	cp -r original/demo/src/. demo/src/
+	cp vendor-secret/Env.elm demo/src
+	npx elm-review --config preview demolam/src --fix-all
 
 
 magic-link-auth:
