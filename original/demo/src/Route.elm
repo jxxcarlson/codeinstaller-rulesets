@@ -8,12 +8,13 @@ import Url.Parser
 
 type Route
     = HomepageRoute
-
+    | CounterPageRoute
 
 
 routesAndNames : List ( Route, String )
 routesAndNames =
-    [ ]
+    [ ( CounterPageRoute, "counter" ) ]
+
 
 
 encodeRoute : Route -> List String

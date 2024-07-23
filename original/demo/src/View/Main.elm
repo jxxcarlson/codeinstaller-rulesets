@@ -4,6 +4,7 @@ import Browser
 import Element exposing (Element)
 import Element.Background
 import Element.Font
+import Pages.Counter
 import Pages.Home
 import Pages.Notes
 import Route exposing (Route(..))
@@ -50,7 +51,8 @@ loadedView model =
         HomepageRoute ->
             generic model Pages.Home.view
 
-
+        CounterPageRoute ->
+            generic model Pages.Counter.view
 
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
@@ -80,7 +82,7 @@ headerView model route config =
     Element.el
         [ Element.Background.color View.Color.blue
         , Element.paddingXY 24 16
-        , Element.width (Element.px 300)
+        , Element.width Element.fill
         , Element.alignTop
         ]
         (Element.wrappedRow
@@ -88,7 +90,7 @@ headerView model route config =
             , Element.Background.color View.Color.blue
             , Element.Font.color (Element.rgb 1 1 1)
             ]
-            (makeLinks route)
+            (makeLinks model route)
         )
 
 
@@ -106,8 +108,8 @@ makeLink currentRoute ( route, name ) =
         { url = Route.encode route, label = Element.text (String.Extra.toTitleCase name) }
 
 
-makeLinks : Route -> List (Element msg)
-makeLinks route =
+makeLinks : Types.LoadedModel -> Route -> List (Element msg)
+makeLinks model route =
     homePageLink route
         :: List.map (makeLink route) Route.routesAndNames
 
