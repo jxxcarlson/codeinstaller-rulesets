@@ -3,7 +3,7 @@
     "name": "jxxcarlson/codeinstaller-rulesets",
     "summary": "Rule sets for installing code with elm-review, e.g., new pages",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "exposed-modules": [
         "RuleSet.Add"
     ],
