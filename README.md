@@ -72,7 +72,7 @@ This is project is a work in progress, with the roadmap emerging as we work on i
 
 - What other installers might be useful beyond adding pages and magic link authentication?
 
-- How can we make the installers easier to use, e.g., how do we handle what are now the vendored files.
+  - How can we make the installers easier to use, e.g., how do we handle what are now the vendored files.
 
 - How can we make the installers more robust?
 
