@@ -21,14 +21,12 @@ import Review.Rule exposing (Rule)
 import String.Extra
 
 
-{-|
+{-| Add magic-link authentication to a Lamdera app:
 
-    Add magic-link authentication to a Lamdera app:
+    configMagicLinkAuth "JC Maxwell" "maxwell" "maxwell@gmail.com"
 
-        configMagicLinkAuth "JC Maxwell" "maxwell" "maxwell@gmail.com"
-
-    This configures the base app with magic-link authentication, where
-    use `maxwell` is the adminstrator.
+This configures the base app with magic-link authentication, where
+user `maxwell` is the administrator.
 
 -}
 magicLinkAuth : String -> String -> String -> List Rule
@@ -253,14 +251,12 @@ newPages =
     pages [ ( "TermsOfService", "terms" ) ]
 
 
-{-|
+{-| Add pages to a Lamdera app:
 
-    Add pages to a Lamdera app:
+    RuleSet.Add.pages [ ( "QuotesRoute", "quotes" ), ( "QuotesRoute", "jokes" ) ]
 
-        RuleSet.Add.pages [ ("QuotesRoute", "quotes"), ("QuotesRoute", "jokes") ]
-
-    adds pages for quotes and jokes to the app.  The routes are `QuotesRoute` and `QuotesRoute`
-    and the paths for the routes are `quotes` and `jokes`, respectively.
+adds pages for quotes and jokes to the app. The routes are `QuotesRoute` and `QuotesRoute`
+and the paths for the routes are `quotes` and `jokes`, respectively.
 
 -}
 pages : List ( String, String ) -> List Rule
