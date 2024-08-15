@@ -1,4 +1,4 @@
-module RuleSet.Add exposing (magicLinkAuth, pages)
+module RuleSet.Add exposing (pages, magicLinkAuth)
 
 {-| Rules for adding pages and for adding magic-link authentication to a Lamdera app.
 
@@ -21,23 +21,22 @@ import Review.Rule exposing (Rule)
 import String.Extra
 
 
-{-|
-    Add magic-link authentication to a Lamdera app:
+{-| Add magic-link authentication to a Lamdera app:
 
-        configMagicLinkAuth "JC Maxwell" "maxwell" "maxwell@gmail.com"
+    configMagicLinkAuth "JC Maxwell" "maxwell" "maxwell@gmail.com"
 
-    This configures the base app with magic-link authentication, where
-    use `maxwell` is the adminstrator.
-
+This configures the base app with magic-link authentication, where
+user `maxwell` is the administrator.
 
 -}
 magicLinkAuth : String -> String -> String -> List Rule
 magicLinkAuth fullname username email =
-    configAll {fullname = fullname, username = username, email = email }
+    configAll { fullname = fullname, username = username, email = email }
+
 
 stringifyAdminConfig : { fullname : String, username : String, email : String } -> String
 stringifyAdminConfig { fullname, username, email } =
-    "{ fullname = " ++ String.Extra.quote fullname ++ ", username = " ++ String.Extra.quote username ++ ", email = " ++ String.Extra.quote email ++"}"
+    "{ fullname = " ++ String.Extra.quote fullname ++ ", username = " ++ String.Extra.quote username ++ ", email = " ++ String.Extra.quote email ++ "}"
 
 
 configAll : { fullname : String, username : String, email : String } -> List Rule
@@ -201,7 +200,7 @@ configAuthFrontend =
 
 
 configAuthBackend : { fullname : String, username : String, email : String } -> List Rule
-configAuthBackend adminConfig=
+configAuthBackend adminConfig =
     [ ClauseInCase.config "Backend" "update" "AuthBackendMsg authMsg" "Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg" |> ClauseInCase.makeRule
     , ClauseInCase.config "Backend" "update" "AutoLogin sessionId loginData" "( model, Lamdera.sendToFrontend sessionId (AuthToFrontend <| Auth.Common.AuthSignInWithTokenResponse <| Ok <| loginData) )" |> ClauseInCase.makeRule
     , ClauseInCase.config "Backend" "update" "OnConnected sessionId clientId" "( model, Reconnect.connect model sessionId clientId )" |> ClauseInCase.makeRule
@@ -240,7 +239,6 @@ configAuthBackend adminConfig=
     ]
 
 
-
 configRoute : List Rule
 configRoute =
     [ -- ROUTE
@@ -252,13 +250,13 @@ configRoute =
 newPages =
     pages [ ( "TermsOfService", "terms" ) ]
 
-{-|
-    Add pages to a Lamdera app:
 
-        RuleSet.Add.pages [ ("QuotesRoute", "quotes"), ("QuotesRoute", "jokes") ]
+{-| Add pages to a Lamdera app:
 
-    adds pages for quotes and jokes to the app.  The routes are `QuotesRoute` and `QuotesRoute`
-    and the paths for the routes are `quotes` and `jokes`, respectively.
+    RuleSet.Add.pages [ ( "QuotesRoute", "quotes" ), ( "QuotesRoute", "jokes" ) ]
+
+adds pages for quotes and jokes to the app. The routes are `QuotesRoute` and `QuotesRoute`
+and the paths for the routes are `quotes` and `jokes`, respectively.
 
 -}
 pages : List ( String, String ) -> List Rule
